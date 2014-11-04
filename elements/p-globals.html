@@ -73,12 +73,9 @@
       },
       logout: function() {
         var self = this;
-        var ajax = this.$.securityApi;
+        var ajax = this.addAuthHeader(this.$.securityApi);
 
         ajax.method = 'DELETE';
-        ajax.headers = {
-          'X-Auth-Token': this.config.token
-        };
 
         var f = function(e) {
           ajax.removeEventListener('core-response', f);
@@ -93,6 +90,23 @@
         ajax.addEventListener('core-response', f);
 
         ajax.go();
+      },
+      addAuthHeader: function(ajax) {
+        ajax.headers = this.objExtend(ajax.headers, {
+          'X-Auth-Token': this.config.token
+        });
+        return ajax;
+      },
+      objExtend: function(obj, dict) {
+        if (!obj) {
+          obj = Object.create({});
+        }
+        for (propName in dict) {
+          if (dict.hasOwnProperty(propName)) {
+            obj[propName] = dict[propName];
+          }
+        }
+        return obj;
       },
     });
   })();

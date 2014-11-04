@@ -1,0 +1,42 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/core-signals/core-signals.html">
+<polymer-element name="my-search">
+  <template>
+    <p-globals id="globals"></p-globals>
+    <core-ajax
+      id="searchApi"
+      url="{{$.globals.config.baseUrl}}/{{$.globals.config.searchApi}}/internal/select"
+      handleAs="json"
+      contentType="application/json"
+      method="GET"></core-ajax>
+  </template>
+  <script>
+  (function() {
+    var config = {
+    };
+    Polymer('my-search', {
+      ready: function() {
+        this.config = config;
+      },
+      search: function(query, searchHandler) {
+        var ajax = this.$.globals.addAuthHeader(this.$.searchApi);
+
+        ajax.params = {
+          wt: 'json',
+          q: query
+        }
+        var f = function(e) {
+          ajax.removeEventListener('core-response', f);
+          var d = this.response;
+          searchHandler(d);
+        };
+        ajax.addEventListener('core-response', f);
+
+        ajax.go();
+      },
+    });
+  })();
+  </script>
+</polymer-element>
