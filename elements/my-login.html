@@ -1,0 +1,61 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/core-signals/core-signals.html">
+<polymer-element name="my-login">
+  <template>
+    <p-globals id="globals"></p-globals>
+    <template bind if="{{!config.isLoggedIn}}">
+      <div id="loginbox">
+        <div class="[ loginform ]">
+          <paper-input id="txtUsername" label="Username" value="{{config.username}}" floatinglabel></paper-input>
+          <paper-input id="txtPassword" label="Password" type="password" value="{{config.password}}" floatinglabel></paper-input>
+        </div>
+        <paper-button on-click="{{logIn}}">Log in</paper-button>
+        <template bind if="{{config.loginInProgress}}">
+          <span class="loader">Loading</span>
+        </template>
+      </div>
+    </template>
+    <template bind if="{{config.isLoggedIn}}">
+      <div id="loggedin" class="[ logininfo ]">
+        <div class="[ message ]">Welcome <strong>{{$.globals.userName}}!</strong></div>
+        <div>
+          <paper-button on-click="{{logOut}}">Log out</paper-button>
+        </div>
+      </div>
+    </template>    
+    <core-signals on-core-signal-user-logged-in="{{loginChanged}}"></core-signals>
+    <core-signals on-core-signal-user-logged-out="{{loginChanged}}"></core-signals>
+  </template>
+  <script>
+  (function() {
+    var config = {
+      isLoggedIn: false,
+      username: '',
+      password: '',
+      loginInProgress: false
+    };
+    Polymer('my-login', {
+      ready: function() {
+        this.config = config;
+      },
+      logIn: function() {
+        this.$.globals.login(this.config.username, this.config.password);
+      },
+      logOut: function() {
+        this.$.globals.logout();
+      },
+      loginChanged: function(event) {
+        if (event.detail.userId) {
+          this.config.isLoggedIn = true;
+        } else {
+          this.config.isLoggedIn = false;
+          this.config.username = '';
+          this.config.password = '';
+        }
+      },
+    });
+  })();
+  </script>
+</polymer-element>

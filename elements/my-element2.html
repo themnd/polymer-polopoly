@@ -1,0 +1,106 @@
+<link rel="import" href="../bower_components/core-menu/core-submenu.html">
+<link rel="import" href="../bower_components/core-item/core-item.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/topeka-elements/avatars.html">
+<link rel="import" href="../bower_components/core-icon/core-icon.html">
+<link rel="import" href="../bower_components/topeka-elements/topeka-resources.html">
+<link rel="import" href="../bower_components/topeka-elements/topeka-leaderboard.html">
+
+<polymer-element name="my-element2">
+
+  <template>
+    <style>    
+      :host {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+      }
+      #core_menu {
+        font-size: 16px;
+        left: -10px;
+        top: -10px;
+        position: relative;
+        opacity: 0.7;
+      }
+      #paper_toast {
+        left: 490px;
+        top: 100px;
+        position: absolute;
+      }
+      #core_icon {
+        height: 64px;
+        width: 64px;
+        left: 940px;
+        top: 150px;
+        position: absolute;
+      }
+      #core_selector {
+        left: 1010px;
+        top: 150px;
+        position: absolute;
+      }
+      #core_icon1 {
+        height: 64px;
+        width: 64px;
+        border-top-left-radius: 50%;
+        border-top-right-radius: 50%;
+        border-bottom-right-radius: 50%;
+        border-bottom-left-radius: 50%;
+        overflow: hidden;
+      }
+      #core_icon2 {
+        height: 64px;
+        width: 64px;
+        margin: 0px 8px;
+        border-top-left-radius: 50%;
+        border-top-right-radius: 50%;
+        border-bottom-right-radius: 50%;
+        border-bottom-left-radius: 50%;
+        overflow: hidden;
+      }
+      #core_icon3 {
+        height: 64px;
+        width: 64px;
+        border-top-left-radius: 50%;
+        border-top-right-radius: 50%;
+        border-bottom-right-radius: 50%;
+        border-bottom-left-radius: 50%;
+        overflow: hidden;
+      }
+      #topeka_leaderboard {
+        width: 300px;
+        height: 300px;
+        left: 420px;
+        top: 110px;
+        position: absolute;
+      }
+    </style>
+    <core-menu selected="0" selectedindex="0" id="core_menu" horizontal layout>
+      <core-submenu opened active id="core_submenu" icon="settings" label="Menu1">
+        <core-item id="core_item" label="mm1" horizontal center layout></core-item>
+        <core-item id="core_item1" label="mm2" horizontal center layout></core-item>
+      </core-submenu>
+      <core-submenu id="core_submenu1" icon="settings" label="Menu2">
+        <core-item id="core_item2" label="mmw1" horizontal center layout></core-item>
+      </core-submenu>
+    </core-menu>
+    <paper-toast text="Toast!" id="paper_toast" class="core-transition-bottom core-transition" touch-action="none"></paper-toast>
+    <core-selector selected="0" selectedindex="0" id="core_selector" flex layout horizontal>
+      <core-icon icon="avatars:avatar-1" id="core_icon1" designmeta="topeka-avatar" active></core-icon>
+      <core-icon icon="avatars:avatar-2" id="core_icon2" designmeta="topeka-avatar"></core-icon>
+      <core-icon icon="avatars:avatar-3" id="core_icon3" designmeta="topeka-avatar"></core-icon>
+    </core-selector>
+    <core-icon icon="avatars:avatar-1" id="core_icon" designmeta="topeka-avatar"></core-icon>
+    <topeka-leaderboard selected="1" id="topeka_leaderboard" vertical layout></topeka-leaderboard>
+  </template>
+
+  <script>
+
+    Polymer({
+      
+    });
+
+  </script>
+
+</polymer-element>

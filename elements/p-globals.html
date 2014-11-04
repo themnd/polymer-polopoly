@@ -1,0 +1,100 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<polymer-element name="p-globals" hidden>
+  <template>
+    <core-ajax
+      id="securityApi"
+      url="{{config.baseUrl}}/{{config.securityApi}}/token"
+      handleAs="json"
+      contentType="application/json"
+      method="POST"></core-ajax>
+  </template>
+  <script>
+  (function() {
+    var baseApi = 'onecms';
+
+    // these variables are shared by all instances of app-globals
+    var config = {
+      //baseUrl: 'http://localhost:8080',
+      baseUrl: 'http://coreos:8080',
+      api: baseApi,
+      securityApi: baseApi + '/security',
+      contentApi: baseApi + '/content',
+      searchApi: baseApi + '/search',
+      token: '',
+      userId: '',
+      userName: '',
+      isLoggedIn: false,
+      loginInProgress: false
+    };
+
+    Polymer('p-globals', {
+      ready: function() {
+        this.config = config;
+      },
+      get userId() {
+        return this.config.userId;
+      },
+      get token() {
+        return this.config.token;
+      },
+      get userName() {
+        return this.config.userName;
+      },
+      login: function(username, password) {
+        var self = this;
+        var ajax = this.$.securityApi;
+
+        ajax.method = 'POST';
+        ajax.params = {
+          format: 'json'
+        }
+        ajax.body = JSON.stringify({
+          'username': username,
+          'password': password
+        });
+        var f = function(e) {
+          ajax.removeEventListener('core-response', f);
+          var d = this.response;
+          console.log(d);
+          self.config.userId = d.userId;
+          self.config.token = d.token;
+          self.config.userName = username;
+          self.config.isLoggedIn = true;
+          self.fire('core-signal', {name: 'user-logged-in', data: d});
+        };
+        ajax.addEventListener('core-response', f);
+        ajax.addEventListener('core-complete', function(e) {
+          self.config.loginInProgress = false;
+        });
+
+        this.config.loginInProgress = true;
+        ajax.go();
+      },
+      logout: function() {
+        var self = this;
+        var ajax = this.$.securityApi;
+
+        ajax.method = 'DELETE';
+        ajax.headers = {
+          'X-Auth-Token': this.config.token
+        };
+
+        var f = function(e) {
+          ajax.removeEventListener('core-response', f);
+          var d = this.response;
+          console.log(d);
+          self.config.userId = '';
+          self.config.token = '';
+          self.config.userName = '';
+          self.config.isLoggedIn = false;
+          self.fire('core-signal', {name: 'user-logged-out', data: d});
+        };
+        ajax.addEventListener('core-response', f);
+
+        ajax.go();
+      },
+    });
+  })();
+  </script>
+</polymer-element>
