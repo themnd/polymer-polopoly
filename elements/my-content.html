@@ -1,0 +1,43 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/ajax-promise/ajax-promise.html">
+<polymer-element name="my-content">
+  <template>
+    <p-globals id="globals"></p-globals>
+    <ajax-promise
+      id="contentApi"
+      handleAs="json"
+      contentType="application/json"
+      method="GET"></ajax-promise>
+  </template>
+  <script>
+  (function() {
+    var config = {
+      url: ''
+    };
+    Polymer('my-content', {
+      ready: function() {
+        this.config = config;
+        this.$g = this.$.globals;
+      },
+      get: function(contentId, resultHandler) {
+        var ajax = this.$g.addAuthHeader(this.$.contentApi);
+
+        ajax.url = this.$g.config.baseUrl + "/" + this.$g.config.contentApi + '/contentid/' + contentId;
+        ajax.params = {
+          format: 'json',
+        }
+
+        ajax.request().then(function(response) {
+          var d = response.response;
+          if (d) {
+            resultHandler(d);
+          }
+        }, function(error) {
+          console.error(error);
+        });
+
+      },
+    });
+  })();
+  </script>
+</polymer-element>

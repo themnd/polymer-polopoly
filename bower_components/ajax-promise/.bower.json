@@ -1,0 +1,30 @@
+{
+  "name": "ajax-promise",
+  "version": "0.0.3",
+  "authors": [
+    "Spyros Ioakeimidis <spyrosikmd@gmail.com>"
+  ],
+  "description": "Element that extends core-ajax and provides support for promises.",
+  "keywords": "ajax, promises",
+  "main": "ajax-promise.html",
+  "license": "MIT",
+  "homepage": "https://github.com/spirosikmd/ajax-promise/",
+  "ignore": [
+    "**/.*"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#~0.3.4",
+    "polymer-test-tools": "Polymer/polymer-test-tools#~0.3.3",
+    "core-ajax": "Polymer/core-ajax#~0.3.5"
+  },
+  "_release": "0.0.3",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.0.3",
+    "commit": "4c9a2a518170f9ff5126ac4aa604cbd96caeb4af"
+  },
+  "_source": "git://github.com/spirosikmd/ajax-promise.git",
+  "_target": "~0.0.3",
+  "_originalSource": "ajax-promise",
+  "_direct": true
+}

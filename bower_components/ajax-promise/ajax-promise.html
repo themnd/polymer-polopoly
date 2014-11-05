@@ -1,0 +1,56 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../core-ajax/core-ajax.html">
+
+<!--
+Element that extends core-ajax and provides support for promises.
+
+##### Example
+
+    <ajax-promise
+      method="GET"
+      url="data.json"
+      handleAs="json"></ajax-promise>
+
+@element ajax-promise
+@blurb Element that extends core-ajax and provides support for promises.
+@status alpha
+@homepage https://github.com/spirosikmd/ajax-promise
+-->
+<polymer-element name="ajax-promise" extends="core-ajax" hidden>
+
+  <script>
+
+    Polymer('ajax-promise', {
+
+      /**
+       * The `request` method will return a Promise that will resolve or reject.
+       *
+       * @method request
+       * @return {Promise} Returns a Promise that will either resolve or reject.
+       */
+      request: function() {
+        var _this = this;
+        return new Promise(function(resolve, reject) {
+          var xhr = _this.go();
+          xhr.onload = function() {
+            // Resolve could be called even on 404 etc so we should check the status.
+            if (_this.isSuccess(xhr)) {
+              var response = _this.evalResponse(xhr);
+              resolve({response: response, xhr: xhr});
+            } else {
+              var response = xhr.status + ': ' + xhr.responseText;
+              reject({response: Error(response), xhr: xhr});
+            }
+          };
+          // Handle network errors
+          xhr.onerror = function() {
+            reject(Error("Network Error"));
+          };
+        });
+      }
+
+    });
+
+  </script>
+
+</polymer-element>

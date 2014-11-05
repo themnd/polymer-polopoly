@@ -6,6 +6,7 @@
 <link rel="import" href="../bower_components/core-toolbar/core-toolbar.html">
 <link rel="import" href="../bower_components/core-scroll-header-panel/core-scroll-header-panel.html">
 <link rel="import" href="my-search.html">
+<link rel="import" href="my-content.html">
 
 <polymer-element name="my-page">
 
@@ -27,6 +28,8 @@
       #section {
         box-shadow: rgba(0, 0, 0, 0.0980392) 0px 2px 4px, rgba(0, 0, 0, 0.0980392) 0px 0px 3px;
         background-color: rgb(250, 250, 250);
+        padding-left: 10px;
+        padding-right: 10px;
       }
       #section1 {
         height: 100%;
@@ -48,7 +51,6 @@
       }
       #section2 {
         background: linear-gradient(rgb(214, 227, 231), rgb(173, 216, 230));
-        height: 100%;
       }
       #core_scroll_header_panel {
         height: 100%;
@@ -60,10 +62,28 @@
         border-radius: 5px;
         background-color: #fff;
         color: #555;
+        height: 80px;
+      }
+      #section paper-input {
+        width: 100%;
+      }
+      .item .modelId {
+        text-align: right;
+        font-size: .9em;
+        font-style: italic;
+      }
+      .item .modelName {
+        text-align: left;
+        font-size: 1.2em;
+        font-weight: bold;
+      }
+      .item .modelLead {
+        text-align: left;
       }
     </style>
     <p-globals id="globals"></p-globals>
     <my-search id="search"></my-search>
+    <my-content id="contentApi"></my-content>
     <core-drawer-panel transition id="core_drawer_panel" touch-action vertical layout>
       <section id="section" drawer vertical layout flex>
         <template bind if="{{$.globals.config.isLoggedIn}}">
@@ -82,10 +102,12 @@
               <div id="searchTitle" class="bottom indent">{{config.query}}</div>
             </core-toolbar>
             <section id="section2" content>
-              <core-list id="list" data="{{config.results}}" height="80" selectionEnabled="false" flex>
+              <core-list id="list" data="{{config.results}}" height="80" selectionEnabled="true" flex>
                 <template>
-                  <div class="item">
-                    List row: {{index}}, data from model: {{model.id}}
+                  <div vertical layout class="item">
+                    <div class="modelName">{{model.contentData.title}}</div>
+                    <div class="modelLead">{{model.contentData.lead}}</div>
+                    <div class="modelId"><span class="modelType">{{model.contentData._type}}</span> {{model.id}}</div>
                   </div>            
                 </template>
               </core-list>
@@ -108,23 +130,21 @@
       doSearch: function() {
         var self = this;
         var search = this.$.search;
+        var contentApi = this.$.contentApi;
         this.config.results = [];
-        results = [];
         search.search(this.config.query, function(r) {
-          console.log(r.response);
           var numFound = r.response.numFound;
           var docs = r.response.docs;
           if (docs) {
             for (var docIdx = 0; docIdx < docs.length; docIdx++) {
               var d = docs[docIdx];
-              var data = {
-                id: d.contentId
-              }
-              results.push(data);
+
+              contentApi.get(d.contentId, function(d) {
+                self.config.results.push(d);
+              });
             }
-            self.config.results = results;
           }
-        });
+        }, 'onecms');
       },
     });
   })();

@@ -1,7 +1,4 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../bower_components/core-signals/core-signals.html">
 <polymer-element name="my-search">
   <template>
     <p-globals id="globals"></p-globals>
@@ -19,13 +16,19 @@
     Polymer('my-search', {
       ready: function() {
         this.config = config;
+        this.$g = this.$.globals;
       },
-      search: function(query, searchHandler) {
+      search: function(query, searchHandler, variantName) {
         var ajax = this.$.globals.addAuthHeader(this.$.searchApi);
 
         ajax.params = {
           wt: 'json',
           q: query
+        }
+        if (variantName) {
+          ajax.params = this.$g.objExtend(ajax.params, {
+            variant: variantName
+          });
         }
         var f = function(e) {
           ajax.removeEventListener('core-response', f);
