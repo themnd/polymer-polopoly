@@ -19,23 +19,28 @@
         this.config = config;
         this.$g = this.$.globals;
       },
-      get: function(contentId, resultHandler) {
+      get: function(contentId) {
         var ajax = this.$g.addAuthHeader(this.$.contentApi);
 
         ajax.url = this.$g.config.baseUrl + "/" + this.$g.config.contentApi + '/contentid/' + contentId;
+        ajax.method = 'GET';
         ajax.params = {
           format: 'json',
         }
 
-        ajax.request().then(function(response) {
-          var d = response.response;
-          if (d) {
-            resultHandler(d);
-          }
-        }, function(error) {
-          console.error(error);
+        return ajax.request();
+      },
+      put: function(contentId, etag, model) {
+        var ajax = this.$g.addAuthHeader(this.$.contentApi);
+        ajax.url = this.$g.config.baseUrl + "/" + this.$g.config.contentApi + '/contentid/' + contentId;
+        ajax.headers = this.$g.objExtend(ajax.headers, {
+          'If-Match': etag
         });
+        ajax.method = 'PUT';
+        ajax.params = {};
+        ajax.body = JSON.stringify(model);
 
+        return ajax.request();
       },
     });
   })();

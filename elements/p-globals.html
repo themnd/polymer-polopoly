@@ -56,7 +56,6 @@
         var f = function(e) {
           ajax.removeEventListener('core-response', f);
           var d = this.response;
-          console.log(d);
           self.config.userId = d.userId;
           self.config.token = d.token;
           self.config.userName = username;

@@ -2,6 +2,7 @@
 <link rel="import" href="../bower_components/core-list/core-list.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../bower_components/core-icon-button/core-icon-button.html">
 <link rel="import" href="../bower_components/core-toolbar/core-toolbar.html">
 <link rel="import" href="../bower_components/core-scroll-header-panel/core-scroll-header-panel.html">
@@ -80,6 +81,15 @@
       .item .modelLead {
         text-align: left;
       }
+      .item .toolbar {
+        text-align: right;
+      }
+      .item.selected {
+        height: 100%
+      }
+      .item.selected paper-input {
+        width: 100%;
+      }
     </style>
     <p-globals id="globals"></p-globals>
     <my-search id="search"></my-search>
@@ -95,22 +105,44 @@
         <template bind if="{{$.globals.config.isLoggedIn}}">
           <core-scroll-header-panel headermargin="128" condenses headerheight="192" id="core_scroll_header_panel" start one flex>
             <core-toolbar id="core_toolbar" class="tall">
-              <core-icon-button icon="cancel" id="core_icon_button"></core-icon-button>
+              <core-icon-button icon="cancel" on-tap="{{cancelResults}}"></core-icon-button>
               <div id="div" flex></div>
-              <core-icon-button icon="search" id="core_icon_button2"></core-icon-button>
-              <core-icon-button icon="more-vert" id="core_icon_button3"></core-icon-button>
-              <div id="searchTitle" class="bottom indent">{{config.query}}</div>
+              <div id="searchTitle" class="bottom indent">Current query: {{config.query}}</div>
             </core-toolbar>
             <section id="section2" content>
-              <core-list id="list" data="{{config.results}}" height="80" selectionEnabled="true" flex>
-                <template>
-                  <div vertical layout class="item">
-                    <div class="modelName">{{model.contentData.title}}</div>
-                    <div class="modelLead">{{model.contentData.lead}}</div>
-                    <div class="modelId"><span class="modelType">{{model.contentData._type}}</span> {{model.id}}</div>
-                  </div>            
-                </template>
-              </core-list>
+              <template bind if="{{!config.selected}}">
+                <core-list id="list" data="{{config.results}}" height="80" flex>
+                  <template>
+                    <div vertical layout class="item">
+                      <div class="message">
+                        <div class="modelName">
+                          <paper-fab icon="create" mini="true" on-tap="{{itemActivate}}" data-idx="{{index}}"></paper-fab>
+                          <span>{{model.contentData.title}}</span>
+                        </div>
+                        <div class="modelLead">{{model.contentData.lead}}</div>
+                        <div class="modelId"><span class="modelType">{{model.contentData._type}}</span> {{model.id}}</div>
+                      </div>
+                    </div>
+                  </template>
+                </core-list>
+              </template>
+              <template bind if="{{config.selected}}">
+                <div vertical layout class="item selected">
+                  <div class="message">
+                    <div class="toolbar">
+                      <core-icon-button icon="save" id="core_icon_button" on-tap="{{saveEdit}}"></core-icon-button>
+                      <core-icon-button icon="cancel" id="core_icon_button" on-tap="{{cancelEdit}}"></core-icon-button>
+                    </div>
+                    <div class="modelName">
+                      <paper-input label="Name" value="{{config.selected.contentData.title}}" floatinglabel></paper-input>
+                    </div>
+                    <div class="modelLead">
+                      <paper-input multiline maxRows="3" label="Lead" value="{{config.selected.contentData.lead}}" floatinglabel></paper-input>
+                    </div>
+                    <div class="modelId"><span class="modelType">{{config.selected.contentData._type}}</span> {{config.selected.id}}</div>
+                  </div>
+                </div>
+              </template>
             </section>
           </core-scroll-header-panel>
         </template>
@@ -121,7 +153,8 @@
   (function() {
     var config = {
       query: '',
-      results: []
+      results: [],
+      selected: null
     };
     Polymer("my-page", {
       ready: function() {
@@ -139,13 +172,46 @@
             for (var docIdx = 0; docIdx < docs.length; docIdx++) {
               var d = docs[docIdx];
 
-              contentApi.get(d.contentId, function(d) {
-                self.config.results.push(d);
-              });
+              contentApi.get(d.contentId)
+                .then(function(response) {
+                  var model = response.response;
+                  var etag = response.xhr.getResponseHeader('ETag');
+                  model['etag'] = etag;
+                  self.config.results.push(model);
+                }, function(error) {
+                  console.error(error);
+                });
             }
           }
         }, 'onecms');
       },
+      itemActivate: function(d) {
+        var idx = d.srcElement.getAttribute("data-idx");
+        var model = this.config.results[idx];
+        this.config.selected = model;
+      },
+      cancelResults: function() {
+        this.config.results = [];
+        this.config.selected = null;
+        this.config.query = '';
+      },
+      cancelEdit: function() {
+        this.config.selected = null;
+      },
+      saveEdit: function() {
+        var self = this;
+        var contentApi = this.$.contentApi;
+        var data = this.config.selected;
+        var model = {
+          contentData: data.contentData
+        };
+        contentApi.put(data.id, data.etag, model)
+          .then(function(response) {
+            self.config.selected = null;
+          }, function(error) {
+            console.error(error);
+          });
+      }
     });
   })();
   </script>
