@@ -13,10 +13,12 @@
   (function() {
     var baseApi = 'onecms';
 
+    var arr = window.location.href.split('/');
+    var browserBaseUrl = arr[0] + '//' + arr[2];
+
     // these variables are shared by all instances of app-globals
     var config = {
-      baseUrl: 'http://localhost:8080',
-      //baseUrl: 'http://coreos:8080',
+      baseUrl: browserBaseUrl,
       api: baseApi,
       securityApi: baseApi + '/security',
       contentApi: baseApi + '/content',
